@@ -2,7 +2,8 @@ import axiosClient from "./client.base";
 import axios from "axios";
 const BASE_URL = "";
 
-export const sendWrappedDocument = async (path, data) => {
+export const sendWrappedDocument = async (path, data, access_token = null) => {
+  if (access_token) data = { ...data, Cookie: `access_token=${access_token}` };
   return await axios.post(`${BASE_URL}${path}`, data);
 };
 
@@ -12,13 +13,16 @@ export const sendWrappedDocument = async (path, data) => {
  * @param {Object} data
  * @return {Promise}
  */
-export const requestVerifyCNFT = async (path, data) => {
+export const requestVerifyCNFT = async (path, data, access_token = null) => {
   const { hashOfDocument, policyId } = data;
+  let headers = {
+    hashOfDocument,
+    policyId,
+  };
+  if (access_token)
+    headers = { ...headers, Cookie: `access_token=${access_token}` };
   return await axiosClient.get(`${BASE_URL}${path}`, {
-    headers: {
-      hashOfDocument,
-      policyId,
-    },
+    headers: headers,
   });
 };
 
@@ -28,15 +32,22 @@ export const requestVerifyCNFT = async (path, data) => {
  * @param {Object} data
  * @return {Promise}
  */
-export const requestVerifySignature = async (path, data) => {
+export const requestVerifySignature = async (
+  path,
+  data,
+  access_token = null
+) => {
   const { address, payload, signature, key } = data;
+  let headers = {
+    address,
+    payload,
+    signature,
+    key,
+  };
+  if (access_token)
+    headers = { ...headers, Cookie: `access_token=${access_token}` };
   return await axiosClient.get(`${BASE_URL}${path}`, {
-    headers: {
-      address,
-      payload,
-      signature,
-      key
-    },
+    headers: headers
   });
 };
 
@@ -46,7 +57,12 @@ export const requestVerifySignature = async (path, data) => {
  * @param {Object} data
  * @return {Promise}
  */
-export const checkExistsDidoWrappedDoc = async (path, data) => {
+export const checkExistsDidoWrappedDoc = async (
+  path,
+  data,
+  access_token = null
+) => {
+  if (access_token) data = { ...data, Cookie: `access_token=${access_token}` };
   return await axiosClient.get(`${BASE_URL}${path}`, { headers: data });
 };
 
@@ -57,10 +73,14 @@ export const checkExistsDidoWrappedDoc = async (path, data) => {
  * @return {Promise}
  */
 
-export const getDidDocumentByDid = async (path, data) => {
+export const getDidDocumentByDid = async (path, data, access_token = null) => {
   const { did, exclude } = data;
   // * only parameter to represent when you need to get a specific object from the DIDController side
   const queryParams = `?only=${exclude}`;
+  let headers = {
+    did
+  }
+  if (access_token) headers = { ...headers, Cookie: `access_token=${access_token}`};
   return await axiosClient.get(`${BASE_URL}${path}${queryParams}`, {
     headers: {
       did: did,
@@ -74,8 +94,12 @@ export const getDidDocumentByDid = async (path, data) => {
  * @param {Object} data - example: {policyId: 'xxxx'}
  * @return {Promise}
  */
-export const _pullNFTs = async (path, data) => {
+export const _pullNFTs = async (path, data, access_token = null) => {
   const { policyId } = data;
+  let headers = {
+    policyId
+  }
+  if (access_token) headers = { ...headers, Cookie: `access_token=${access_token}`};
   return await axiosClient.get(`${BASE_URL}${path}`, {
     headers: {
       policyId: policyId,
@@ -88,7 +112,12 @@ export const _pullNFTs = async (path, data) => {
  * @param {Object} data
  * @return {Promise}
  */
-export const requestPullTransactions = async (path, data) => {
+export const requestPullTransactions = async (
+  path,
+  data,
+  access_token = null
+) => {
+  if(access_token) data = { ...data, Cookie: `access_token=${access_token}` };
   return await axiosClient.get(`${BASE_URL}${path}`, {
     headers: data,
   });
@@ -99,7 +128,12 @@ export const requestPullTransactions = async (path, data) => {
  * @param {Object} data
  * @return {Promise}
  */
-export const requestCreateCredential = async (path, data) => {
+export const requestCreateCredential = async (
+  path,
+  data,
+  access_token = null
+) => {
+  if(access_token) data = { ...data, Cookie: `access_token=${access_token}` };
   return await axiosClient.post(`${BASE_URL}${path}`, data);
 };
 
@@ -107,26 +141,42 @@ export const requestCreateCredential = async (path, data) => {
  * @param {String} path
  * @param {Object} data
  * @return {Promise}
-*/
-export const requestPublicKey = async (path, data) => {
+ */
+export const requestPublicKey = async (path, data, access_token = null) => {
   const { address, user } = data;
-  return await axiosClient.get(`${BASE_URL}${path}?address=${address}&&user=${user}`);
+  return await axiosClient.get(
+    `${BASE_URL}${path}?address=${address}&&user=${user}`, {
+      headers: {
+        Cookie: `access_token=${access_token}`
+      }
+    }
+  );
 };
 
 /**
  * @param {String} path
  * @param {Object} data
- * @return {Promise} 
-*/
-export const requestUpdateDidDocument = async (path, data) => {
+ * @return {Promise}
+ */
+export const requestUpdateDidDocument = async (
+  path,
+  data,
+  access_token = null
+) => {
+  if(access_token) data = { ...data, Cookie: `access_token=${access_token}` };
   return await axiosClient.put(`${BASE_URL}${path}`, data);
-}
+};
 
 /**
  * @param {String} path
  * @param {Object} data
- * @return {Promise} 
-*/
-export const requestRevokeDocument = async (path, data) => {
+ * @return {Promise}
+ */
+export const requestRevokeDocument = async (
+  path,
+  data,
+  access_token = null
+) => {
+  if(access_token) data = { ...data, Cookie: `access_token=${access_token}` };
   return await axiosClient.delete(`${BASE_URL}${path}`, data);
-}
+};
