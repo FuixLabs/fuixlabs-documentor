@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
 // * Rest libraries
 import {
@@ -7,27 +7,32 @@ import {
   requestCreateCredential,
   requestPublicKey,
   sendWrappedDocument,
-} from '../rest/client.rest';
-import { CLIENT_PATH } from '../rest/client.path';
+} from "../rest/client.rest";
+import { CLIENT_PATH } from "../rest/client.path";
 
 // * Constants libraries
-import { ACTIONS_IDENTITY } from '../constants/action';
+import { ACTIONS_IDENTITY } from "../constants/action";
 import {
   SERVICE,
   IdentityProofType,
   VALID_DOCUMENT_NAME_TYPE,
   _DOCUMENT_TYPE,
-} from '../constants/type';
-import { VERIFIER_ERROR_CODE, CREDENTIAL_ERROR } from '../constants/error';
+} from "../constants/type";
+import { VERIFIER_ERROR_CODE, CREDENTIAL_ERROR } from "../constants/error";
 
 // * Utilities libraries
-import { verifyCardanoDocument } from './verifier';
-import { digestDocument } from './digest';
-import { deepMap } from 'utils/salt.ts';
-import { _wrapDocument, _createDocument, generateDidOfWrappedDocument, unsalt } from './data';
-import { generateDid } from './did';
+import { verifyCardanoDocument } from "./verifier";
+import { digestDocument } from "./digest";
+import { deepMap } from "utils/salt.ts";
+import {
+  _wrapDocument,
+  _createDocument,
+  generateDidOfWrappedDocument,
+  unsalt,
+} from "./data";
+import { generateDid } from "./did";
 
-const SAMPLE_SERVICE = 'cardano';
+const SAMPLE_SERVICE = "cardano";
 
 /**
  * Create wrapped document rely on javascript object, service, current user wallet address and did
@@ -37,22 +42,29 @@ const SAMPLE_SERVICE = 'cardano';
  * @param {string} did - Current user did
  * @return {Promise}
  */
-export const createWrappedDocument = async (document, service, walletAddress, did) => {
+export const createWrappedDocument = async (
+  document,
+  service,
+  walletAddress,
+  did
+) => {
   let { fileName, companyName } = document;
   // Init identityProof
   let identityProofType = {
-    type: '',
+    type: "",
   };
   if (!document || !fileName || !companyName || !did) {
-    const newLocal = false;
-    throw newLocal;
+    throw CREDENTIAL_ERROR.INVALID_PARAMETER;
   }
   try {
     // Send GET request to controller to check whether the DID_Document exist
-    const response = await checkExistsDidoWrappedDoc(CLIENT_PATH.CHECK_DID_OF_WRAPPED_DOCUMENT, {
-      companyName,
-      fileName: fileName,
-    });
+    const response = await checkExistsDidoWrappedDoc(
+      CLIENT_PATH.CHECK_DID_OF_WRAPPED_DOCUMENT,
+      {
+        companyName,
+        fileName: fileName,
+      }
+    );
     const isExisted = response.data;
     //Get the existed condition of DID_Document
     // const isExisted = response?.data?.isExisted;
@@ -66,7 +78,7 @@ export const createWrappedDocument = async (document, service, walletAddress, di
         identityProofType = { ...identityProofType, ...identityProofDid };
       } else if (service === SERVICE.ETHERIUM) {
         const identityProofLocation = {
-          location: 'weird-coffee-shrew.sandbox.openattestation.com', //Example location
+          location: "weird-coffee-shrew.sandbox.openattestation.com", //Example location
         };
         identityProofType.type = SERVICE.ETHERIUM;
         identityProofType = { ...identityProofType, ...identityProofLocation };
@@ -101,28 +113,40 @@ export const createWrappedDocument = async (document, service, walletAddress, di
   }
 };
 
-export const createDocuments = async (documents, usedAddress, update, updateDocument) => {
+export const createDocuments = async (
+  documents,
+  usedAddress,
+  update,
+  updateDocument
+) => {
   try {
     for (let index = 0; index < documents.length; index++) {
       let document = documents[index];
       document = deepMap(document, unsalt);
       let createdDocument = {};
       for (const key in document) {
-        if (key !== 'did')
+        if (key !== "did")
           createdDocument = Object.assign(createdDocument, {
             [key]: document[key],
           });
       }
       createdDocument = Object.assign(createdDocument, {
-        companyName: 'SAMPLE_COMPANY_NAME',
+        companyName: "SAMPLE_COMPANY_NAME",
         // * Get type rely on name of document in config file
-        intention: VALID_DOCUMENT_NAME_TYPE.find((prop) => prop.name === createdDocument.name).type,
+        intention: VALID_DOCUMENT_NAME_TYPE.find(
+          (prop) => prop.name === createdDocument.name
+        ).type,
       });
 
-      const did = document['did']; // Did of issuers
+      const did = document["did"]; // Did of issuers
       // * Create new document, generate did of wrapped-document rely on file name and company name, and create target-hash based on data of the document
       try {
-        let res = await createWrappedDocument(createdDocument, SAMPLE_SERVICE, usedAddress, did);
+        let res = await createWrappedDocument(
+          createdDocument,
+          SAMPLE_SERVICE,
+          usedAddress,
+          did
+        );
         if (res.error_code) {
           throw res;
         }
@@ -146,13 +170,19 @@ export const createDocuments = async (documents, usedAddress, update, updateDocu
           did: ddidDocument,
         };
         // * If the type of document is non-trade, then make a new document with new policy id, otherwise, make a copy of current document with the same policy id
-        if (update && unsalt(wrappedDocument.data.intention) === _DOCUMENT_TYPE.nonTrade)
+        if (
+          update &&
+          unsalt(wrappedDocument.data.intention) === _DOCUMENT_TYPE.nonTrade
+        )
           requestBody = {
             ...requestBody,
             previousHashOfDocument: updateDocument.targetHash,
             originPolicyId: updateDocument.policyId,
           };
-        await sendWrappedDocument(CLIENT_PATH.SEND_WRAPPED_DOCUMENT, requestBody); // **
+        await sendWrappedDocument(
+          CLIENT_PATH.SEND_WRAPPED_DOCUMENT,
+          requestBody
+        ); // **
       } catch (e) {
         return;
       }
@@ -224,9 +254,21 @@ export const pullNFTs = async (policyId) => {
  * @param {Object} data
  * @return {Promise}
  */
-export const signObject = async (currentWallet, publicKey, data, fuixlabsWalletors) => {
-  if(fuixlabsWalletors) return await fuixlabsWalletors(publicKey, Buffer.from(JSON.stringify(data), 'utf8').toString('hex'));
-  return await currentWallet.signData(publicKey, Buffer.from(JSON.stringify(data), 'utf8').toString('hex'));
+export const signObject = async (
+  currentWallet,
+  publicKey,
+  data,
+  fuixlabsWalletors
+) => {
+  if (fuixlabsWalletors)
+    return await fuixlabsWalletors(
+      publicKey,
+      Buffer.from(JSON.stringify(data), "utf8").toString("hex")
+    );
+  return await currentWallet.signData(
+    publicKey,
+    Buffer.from(JSON.stringify(data), "utf8").toString("hex")
+  );
 };
 
 /**
@@ -239,8 +281,12 @@ export const signObject = async (currentWallet, publicKey, data, fuixlabsWalleto
  * @param {String} signature
  * @return {Object} - return a credential
  */
-export const createCredential = async ({ dids, didoWrappedDocument, metadata, action }, currentUserPublicKey) => {
-  if (!dids || !didoWrappedDocument || !action) return CREDENTIAL_ERROR.INVALID_PARAMETER;
+export const createCredential = async (
+  { dids, didoWrappedDocument, metadata, action },
+  currentUserPublicKey
+) => {
+  if (!dids || !didoWrappedDocument || !action)
+    return CREDENTIAL_ERROR.INVALID_PARAMETER;
 
   // * Find the action of transferring ownership or holdership the document
   const _action = ACTIONS_IDENTITY.find((_action) => _action === action);
@@ -263,10 +309,13 @@ export const createCredential = async ({ dids, didoWrappedDocument, metadata, ac
   try {
     const signedData = await signObject(currentUserPublicKey, payload);
     // * Convert payload object to hex string
-    const hexStringPayload = Buffer.from(JSON.stringify(payload), 'utf8').toString('hex');
+    const hexStringPayload = Buffer.from(
+      JSON.stringify(payload),
+      "utf8"
+    ).toString("hex");
 
     let credential = {
-      issuer: generateDid('SAMPLE_COMPANY_NAME', currentUserPublicKey),
+      issuer: generateDid("SAMPLE_COMPANY_NAME", currentUserPublicKey),
       credentialSubject,
       signature: signedData,
       metadata,
@@ -284,11 +333,14 @@ export const createCredential = async ({ dids, didoWrappedDocument, metadata, ac
  */
 export const changeHoldership = async (currentUserPublicKey, args) => {
   const { didoWrappedDocument, keys, action } = args;
-  if (!didoWrappedDocument || !currentUserPublicKey || !keys || !action) return VERIFIER_ERROR_CODE.INVALID_PARAMETER;
-  const isSurrender = ACTIONS_IDENTITY.find((_action) => _action === action).surrender;
+  if (!didoWrappedDocument || !currentUserPublicKey || !keys || !action)
+    return VERIFIER_ERROR_CODE.INVALID_PARAMETER;
+  const isSurrender = ACTIONS_IDENTITY.find(
+    (_action) => _action === action
+  ).surrender;
   try {
     let dids = {
-      issuerKey: generateDid('SAMPLE_COMPANY_NAME', currentUserPublicKey),
+      issuerKey: generateDid("SAMPLE_COMPANY_NAME", currentUserPublicKey),
     };
     let publicKey = null,
       updateUser = null;
@@ -300,7 +352,10 @@ export const changeHoldership = async (currentUserPublicKey, args) => {
       });
       dids = {
         ...dids,
-        [requestResult.data.user]: generateDid('SAMPLE_COMPANY_NAME', requestResult?.data?.publicKey),
+        [requestResult.data.user]: generateDid(
+          "SAMPLE_COMPANY_NAME",
+          requestResult?.data?.publicKey
+        ),
       };
       publicKey = requestResult.data.publicKey;
       updateUser = action.updatedFieds[0].name;
@@ -319,7 +374,10 @@ export const changeHoldership = async (currentUserPublicKey, args) => {
       payload: payload,
       signature: signature,
     };
-    const createResponse = await requestCreateCredential(CLIENT_PATH.CREATE_CREDENTIAL, bodyData);
+    const createResponse = await requestCreateCredential(
+      CLIENT_PATH.CREATE_CREDENTIAL,
+      bodyData
+    );
     return {
       data: createResponse.data,
       user: updateUser,

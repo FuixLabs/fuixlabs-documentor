@@ -1,6 +1,6 @@
 // * Constants libraries
 import { SERVICE } from './constants/type';
-import { VERIFIER_ERROR_CODE } from '../constants/error';
+import { VERIFIER_ERROR_CODE } from './constants/error';
 
 // * Rest libraries
 import { CLIENT_PATH } from './rest/client.path';

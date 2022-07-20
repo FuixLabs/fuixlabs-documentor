@@ -1,4 +1,4 @@
-// * Utilities libraties
+// * Utilities libraries
 import { deepMap } from './utils/salt.ts';
 import { unsalt } from './utils/data';
 import { signObject, wrapDocument, createWrappedDocument } from './utils/document';
