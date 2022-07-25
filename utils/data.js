@@ -1,10 +1,10 @@
-const { UUIDV4_LENGTH } = require('../constants/hash');
-const { v4 } = require('uuid');
+const {UUIDV4_LENGTH} = require('../constants/hash');
+const {v4} = require('uuid');
 const isUUID = require('validator/lib/isUUID');
-const { deepMap } = require('./salt.ts');
-const { SIGNATURE_TYPE } = require('../constants/type');
+const {deepMap} = require('./salt.ts');
+const {SIGNATURE_TYPE} = require('../constants/type');
 
-export const saltData = (data) => {
+export const saltData = data => {
   return deepMap(data, uuidSalt);
 };
 
@@ -12,7 +12,7 @@ export const saltData = (data) => {
  * @param {Object} data
  * @return {Object} document
  */
-export const _createDocument = (data) => {
+export const _createDocument = data => {
   const documentSchema = {
     data: saltData(data),
   };
@@ -33,7 +33,7 @@ export const _wrapDocument = (document, signedData, targetHash) => {
     proof: signatureProof,
     merkleRoot: targetHash,
   };
-  const data = document.data;
+  const data = document?.data;
   const wrappedDocument = {
     data,
     signature,
@@ -44,7 +44,7 @@ export const _wrapDocument = (document, signedData, targetHash) => {
 /**
  *
  */
-export const uuidSalt = (value) => {
+export const uuidSalt = value => {
   const salt = v4();
   return `${salt}:${primitiveToTypedString(value)}`;
 };
@@ -52,7 +52,7 @@ export const uuidSalt = (value) => {
 /**
  *
  */
-const primitiveToTypedString = (value) => {
+const primitiveToTypedString = value => {
   switch (typeof value) {
     case 'number':
     case 'string':
@@ -64,7 +64,9 @@ const primitiveToTypedString = (value) => {
         // typeof null is 'object' so we have to check for it
         return 'null:null';
       }
-      throw new Error(`Parsing error, value is not of primitive type: ${value}`);
+      throw new Error(
+        `Parsing error, value is not of primitive type: ${value}`,
+      );
   }
 };
 
@@ -100,7 +102,7 @@ export function deepUnsalt(data) {
  * @param {String} input
  * @return {Boolean} - Dose the input start with UUIDV4
  */
-export const startsWithUuidV4 = (input) => {
+export const startsWithUuidV4 = input => {
   if (input && typeof input === 'string') {
     const elements = input.split(':');
     return isUUID(elements[0], 4);
@@ -112,7 +114,7 @@ export const startsWithUuidV4 = (input) => {
  * @param {String} input
  * Returns an appropriately typed value given a string with type annotations, e.g: "number:5"
  */
-export const typedStringToPrimitive = (input) => {
+export const typedStringToPrimitive = input => {
   const [type, ...valueArray] = input.split(':');
   const value = valueArray.join(':'); // just in case there are colons in the value
 
@@ -128,6 +130,8 @@ export const typedStringToPrimitive = (input) => {
     case 'undefined':
       return undefined;
     default:
-      throw new Error(`Parsing error, type annotation not found in string: ${input}`);
+      throw new Error(
+        `Parsing error, type annotation not found in string: ${input}`,
+      );
   }
 };

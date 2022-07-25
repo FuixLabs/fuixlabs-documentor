@@ -11,6 +11,10 @@ export const VALID_DOCUMENT_NAME_TYPE = [
     name: 'OpenCerts Certificate of Award',
     type: 'trade',
   },
+  {
+    name: 'Certificate of Analysis (COA)',
+    type: 'trade',
+  },
 ];
 
 export const SAMPLE_SERVICE = 'cardano';
@@ -20,7 +24,7 @@ export const _DOCUMENT_TYPE = {
   nonTrade: 'non-trade',
 };
 
-export const COMPANY_NAME = 'SAMPLE_COMPANY_NAME';
+export const COMPANY_NAME = 'COMPANY_NAME';
 
 export const SERVICE = {
   CARDANO: 'cardano',

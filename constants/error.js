@@ -1,3 +1,15 @@
+export const ERROR_MSG = {
+  EXISTED_DID_DOCUMENT: 'Did-Document is existed! Please try again!',
+  SERVER_ERROR: 'There are some problems with our server! Please try again!',
+  INVALID_PARAMETER: 'Missing parameters! Please check your configuration!',
+  MISSING_EXTENSION: 'Missing extension! Please install extension',
+  CANNOT_CONNECT_WALLET:
+    'There are some problems when we try to connect to your wallet, Please try again!',
+  INVALID_EXTENSION: 'The document which need to be verified should be JSON!',
+  CANNOT_STORE_HASH: 'Cannot store the targetHash on Cardano service!',
+  CANNOT_PULL_TRANSACTIONS: 'Cannot pull transactions from Github service!',
+};
+
 export const VERIFIER_ERROR_CODE = {
   MISSING_SIGNATURE: {
     error_code: 1001,
@@ -9,7 +21,7 @@ export const VERIFIER_ERROR_CODE = {
   },
   CANNOT_VERIFY_SIGNATURE: {
     error_code: 1003,
-    msg: 'We cannot verify the signature of wrappedDocument now, Please try again later!',
+    msg: 'We cannnot verify the signature of wrappedDocument now, Please try again later!',
   },
   INVALID_PARAMETER: {
     error_code: 1004,
@@ -49,11 +61,22 @@ export const VERIFIER_ERROR_CODE = {
   },
   CNFTs: {
     error_code: 1013,
-    msg: 'Cannot found CNFTs from Cardano Service!',
+    msg: 'Cannot found CNFTs fron Cardano Serivce!',
   },
   MISSING_PERMISSIONS: {
     error_code: 3001,
     msg: 'You do not have permission to edit this document! Please contact the owner for more information!',
+  },
+};
+
+export const CONFIG_VERIFIER_ERROR_CODE = {
+  CANNOT_CONVERT_JSON: {
+    error_code: 1014,
+    msg: 'Cannot convert JSON to object!',
+  },
+  INVALID_NETWORK: {
+    error_code: 1015,
+    msg: 'The network property of configuration is invalid!',
   },
 };
 
@@ -80,17 +103,16 @@ export const CREDENTIAL_ERROR = {
   },
 };
 
-export const GENERAL_ERROR = {
-  MISSING_ADDRESS: {
-    error_code: 3001,
-    msg: 'Missing address of current user!',
+export const SYNTAX_ERROR = {
+  INVALID_DID: {
+    error_code: 3018,
+    msg: 'The DID is invalid! Please check your DID again!',
   },
-  CANNOT_GET_INFORMATION_OF_WRAPPED_DOCUMENT: {
-    error_code: 3002,
-    msg: 'Cannot get information of wrapped document!',
+};
+
+export const GENERATOR_ERROR = {
+  CANNOT_COPY_TO_CLIPBOARD: {
+    error_code: 4001,
+    msg: 'Cannot copy to clipboard! Please try again later!',
   },
-  MISSING_PARAMETERS: {
-    error_code: 3003,
-    msg: 'Missing parameters! Please check your configuration!',
-  }
 };
