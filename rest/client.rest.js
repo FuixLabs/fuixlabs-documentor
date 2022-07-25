@@ -111,7 +111,6 @@ export const _pullNFTs = async (
   data,
   access_token = null,
 ) => {
-  console.log(path);
   const {policyId} = data;
   let headers = {
     policyId,
@@ -209,4 +208,25 @@ export const requestRevokeDocument = async (
     data = {...data, Cookie: `access_token=${access_token}`};
   }
   return await axiosClient.delete(`${BASE_URL}${path}`, data);
+};
+
+/**
+ * @param {number} pageNumber
+ * @return {Promise}
+ */
+export const searchDocument = async (
+  searchString,
+  pageNumber = 1,
+  access_token = null,
+) => {
+  let headers = {};
+  if (access_token) {
+    headers = {Cookie: `access_token=${access_token}`};
+  }
+  return await axiosClient.get(
+    `${BASE_URL}${CLIENT_PATH.SEARCH_DOCUMENTS}pageNumber=${pageNumber}&searchString=${searchString}`,
+    {
+      headers: headers,
+    },
+  );
 };

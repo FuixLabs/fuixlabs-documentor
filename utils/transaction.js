@@ -48,7 +48,9 @@ const filterTransaction = async (data, access_token) => {
       },
       access_token,
     );
-    if (verifyRes?.data?.data.asset) status = 'Issued';
+    if (verifyRes?.data?.data.asset) {
+      status = 'Issued';
+    }
     return {
       fileName: unsalt(data?.data?.fileName),
       documentHash: data?.signature?.targetHash,

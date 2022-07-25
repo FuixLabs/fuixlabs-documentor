@@ -15,4 +15,6 @@ export const CLIENT_PATH = {
   CREATE_CREDENTIAL: 'resolver/credential/',
   GET_PUBLIC_KEY: 'resolver/auth/public-key/',
   UPDATE_DID_DOCUMENT: 'resolver/wrapped-document/transfer/',
+  SEARCH_DOCUMENTS:
+    'resolver/wrapped-document/search?companyName=COMPANY_NAME&',
 };
