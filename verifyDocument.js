@@ -11,6 +11,7 @@ import { digestDocument } from './utils/digest';
 import { checkProof } from './utils/merkle';
 import { get } from 'lodash';
 import { Buffer } from 'buffer';
+import {unsalt} from './utils/data'
 
 /**
  * Function used to validate wrapped document against current service
@@ -104,7 +105,7 @@ export const verifyCardanoDocument = async (document, address) => {
       ).toString('hex');
       // * Call to cardanoService to verify the targetHash
       await verifyCNFT(targetHash, policyId);
-      await verifySignature(address, payload, signature, key);
+      await verifySignature(unsalt(document?.data.issuers[0]?.address), payload, signature, key);
       const EXCLUDE_VALUE = '';
       const getRes = await getDidDocumentByDid(CLIENT_PATH.GET_DID_DOCUMENT_BY_DID, {
         did: didOfWrappedDocument,
