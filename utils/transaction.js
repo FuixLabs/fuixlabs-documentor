@@ -5,7 +5,6 @@ import {unsalt} from './data';
 import {requestVerifyCNFT} from '../rest/client.rest';
 import {requestPullTransactions} from '../rest/client.rest';
 import {CLIENT_PATH} from '../rest/client.path';
-
 /**
  *
  * @param {String} did - did of wrapped document
@@ -28,7 +27,7 @@ export const pullTransactions = async (did, access_token) => {
     }
     return formatTransactions;
   } catch (e) {
-    console.log('e', e);
+    console.log('pullTransactions ', e);
     throw ERROR_MSG.CANNOT_PULL_TRANSACTIONS;
   }
 };
