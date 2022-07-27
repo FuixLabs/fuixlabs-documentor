@@ -17,6 +17,7 @@ export const pullTransactions = async (did, access_token) => {
       {did},
       access_token,
     );
+    // console.log('transactions', transactions);
     let formatTransactions = [];
     for (let i = 0; i < transactions?.data.length; i++) {
       let filteredTransaction = await filterTransaction(
@@ -27,7 +28,7 @@ export const pullTransactions = async (did, access_token) => {
     }
     return formatTransactions;
   } catch (e) {
-    console.log('pullTransactions ', e);
+    console.log('pullTransactions ', JSON.stringify(e));
     throw ERROR_MSG.CANNOT_PULL_TRANSACTIONS;
   }
 };

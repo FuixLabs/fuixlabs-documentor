@@ -69,6 +69,7 @@ export const createWrappedDocument = async (
       },
       access_token,
     );
+    console.log('createWrappedDocument 2', response.data);
     const isExisted = response.data;
     //Get the existed condition of DID_Document
     // const isExisted = response?.data?.isExisted;
@@ -113,6 +114,7 @@ export const createWrappedDocument = async (
     }
     throw VERIFIER_ERROR_CODE.EXIST_FILE_NAME;
   } catch (e) {
+    console.log(JSON.stringify(e));
     throw e;
   }
 };
