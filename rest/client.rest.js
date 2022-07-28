@@ -1,7 +1,10 @@
 import axiosClient from './client.base';
 import axios from 'axios';
 import {CLIENT_PATH} from './client.path';
-const BASE_URL = 'http://192.168.2.12:8000/';
+// 'http://192.168.2.37:8000/';
+const BASE_URL =
+  'https://enigmatic-sands-00024.herokuapp.com/18.139.84.180:8000/';
+// 'http://18.139.84.180:8000/';
 
 export const sendWrappedDocument = async (path, data, access_token = null) => {
   let headers = {};
@@ -139,6 +142,7 @@ export const requestPullTransactions = async (
   if (access_token) {
     data = {...data, Cookie: `access_token=${access_token}`};
   }
+  console.log('BASE_URL', BASE_URL);
   return await axiosClient.get(`${BASE_URL}${path}`, {
     headers: data,
   });

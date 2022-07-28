@@ -127,6 +127,7 @@ export const createDocument = async (
         wrappedDocument: doc,
       };
     } catch (e) {
+      console.log('e', e);
       throw (
         e.msg ||
         e.errorMessage ||
