@@ -98,7 +98,7 @@ export const verifyCardanoDocument = async (document, address) => {
       // * Generate payload rely on public key and targetHash
       const payload = Buffer.from(
         JSON.stringify({
-          address: address,
+          address: unsalt(document?.data.issuers[0]?.address),
           targetHash: targetHash,
         }),
         'utf8'
