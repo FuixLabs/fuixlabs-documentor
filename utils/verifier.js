@@ -1,10 +1,14 @@
-import { get } from 'lodash';
-import { VERIFIER_ERROR_CODE } from '../constants/error';
-import { digestDocument } from './digest';
-import { checkProof } from './merkle';
-import { requestVerifyCNFT, requestVerifySignature, getDidDocumentByDid } from '../rest/client.rest';
-import { CLIENT_PATH } from '../rest/client.path';
-import { Buffer } from 'buffer';
+import {get} from 'lodash';
+import {VERIFIER_ERROR_CODE} from '../constants/error';
+import {digestDocument} from './digest';
+import {checkProof} from './merkle';
+import {
+  requestVerifyCNFT,
+  requestVerifySignature,
+  getDidDocumentByDid,
+} from '../rest/client.rest';
+import {CLIENT_PATH} from '../rest/client.path';
+import {Buffer} from 'buffer';
 
 /**
  * Verify the CNFT of the wrappedDocument on Cardano blockchain rely on its targetHash and policyId
@@ -35,8 +39,13 @@ const verifyCNFT = async (targetHash, policyId) => {
  */
 const verifySignature = async (address, payload, signature) => {
   try {
-    const verifySigRes = await requestVerifySignature(CLIENT_PATH.VERIFY_SIGNATURE, { address, payload, signature });
-    if (verifySigRes.data.error_code || !verifySigRes.data.data.result) throw verifySigRes.data;
+    const verifySigRes = await requestVerifySignature(
+      CLIENT_PATH.VERIFY_SIGNATURE,
+      {address, payload, signature},
+    );
+    if (verifySigRes.data.error_code || !verifySigRes.data.data.result) {
+      throw verifySigRes.data;
+    }
   } catch (e) {
     throw VERIFIER_ERROR_CODE.INVALID_SIGNATURE;
   }
@@ -66,23 +75,28 @@ export const verifyCardanoDocument = async (document, address) => {
           address: address,
           targetHash: targetHash,
         }),
-        'utf8'
+        'utf8',
       ).toString('hex');
       // Call to cardanoService to verify the targetHash
       await verifyCNFT(targetHash, policyId);
       await verifySignature(address, payload, signature);
       const EXCLUDE_VALUE = '';
-      const getRes = await getDidDocumentByDid(CLIENT_PATH.GET_DID_DOCUMENT_BY_DID, {
-        did: didOfWrappedDocument,
-        exclude: EXCLUDE_VALUE,
-      });
+      const getRes = await getDidDocumentByDid(
+        CLIENT_PATH.GET_DID_DOCUMENT_BY_DID,
+        {
+          did: didOfWrappedDocument,
+          exclude: EXCLUDE_VALUE,
+        },
+      );
       if (getRes.data) {
         return {
           policyId: policyId,
           didDoc: getRes.data.didDoc,
         };
       }
-      if (getRes.data.errorCode) throw getRes.data;
+      if (getRes.data.errorCode) {
+        throw getRes.data;
+      }
     }
   } catch (e) {
     throw e;
@@ -93,17 +107,26 @@ export const verifyCardanoDocument = async (document, address) => {
  * @param {Object} document - wrappedDocument
  * @return {Boolean}
  */
-const verifyTargetHash = (document) => {
+const verifyTargetHash = document => {
+  console.log('verifyTargetHash 2');
   // Get signature field from wrappedDocument which user wanna verify
   const signature = get(document, 'signature');
-  if (!signature) return VERIFIER_ERROR_CODE.MISSING_SIGNATURE;
+  if (!signature) {
+    return VERIFIER_ERROR_CODE.MISSING_SIGNATURE;
+  }
   // Checks target hash
   const digest = digestDocument(document);
   const targetHash = get(document, 'signature.targetHash');
 
   // If the system hashes the contents of the current wrapperDocument, check if it matches the targetHash available in the wrapperDocument.
-  if (digest !== targetHash) return VERIFIER_ERROR_CODE.INVALID_TARGET_HASH;
+  if (digest !== targetHash) {
+    return VERIFIER_ERROR_CODE.INVALID_TARGET_HASH;
+  }
 
   // Function that runs through the supplied hashes to arrive at the supplied merkle root hash
-  return checkProof([], document?.signature?.merkleRoot, document?.signature?.targetHash);
+  return checkProof(
+    [],
+    document?.signature?.merkleRoot,
+    document?.signature?.targetHash,
+  );
 };

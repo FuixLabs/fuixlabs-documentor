@@ -1,17 +1,21 @@
 // * Constants libraries
-import { SERVICE } from './constants/type';
-import { VERIFIER_ERROR_CODE } from './constants/error';
+import {SERVICE} from './constants/type';
+import {VERIFIER_ERROR_CODE} from './constants/error';
 
 // * Rest libraries
-import { CLIENT_PATH } from './rest/client.path';
-import { requestVerifyCNFT, getDidDocumentByDid, requestVerifySignature } from './rest/client.rest';
+import {CLIENT_PATH} from './rest/client.path';
+import {
+  requestVerifyCNFT,
+  getDidDocumentByDid,
+  requestVerifySignature,
+} from './rest/client.rest';
 
 // * Utilities libraries
-import { digestDocument } from './utils/digest';
-import { checkProof } from './utils/merkle';
-import { get } from 'lodash';
-import { Buffer } from 'buffer';
-import {unsalt} from './utils/data'
+import {digestDocument} from './utils/digest';
+import {checkProof} from './utils/merkle';
+import {get} from 'lodash';
+import {Buffer} from 'buffer';
+import {unsalt} from './utils/data';
 
 /**
  * Function used to validate wrapped document against current service
@@ -20,7 +24,12 @@ import {unsalt} from './utils/data'
  * @param {String} service - the name of service that user want to verify on
  * @return {Promise}
  */
-export const verifyWrappedDocument = async (document, usedAddress, service) => {
+export const verifyWrappedDocument = async (
+  document,
+  usedAddress,
+  service,
+  access_token,
+) => {
   // * Check the validity of the args
   if (!document || !service || !usedAddress) {
     return VERIFIER_ERROR_CODE.INVALID_PARAMETER;
@@ -31,8 +40,9 @@ export const verifyWrappedDocument = async (document, usedAddress, service) => {
     // * Skip it for demo
   } else {
     try {
-      const res = await verifyCardanoDocument(document, usedAddress);
+      const res = await verifyCardanoDocument(document, access_token);
       // * If the wrappedDocument is valid will return true
+      console.log(res);
       return res;
     } catch (e) {
       throw e;
@@ -67,11 +77,25 @@ const verifyCNFT = async (targetHash, policyId) => {
  * @param {String} signature
  * @return {Promise}
  */
-const verifySignature = async (address, payload, signature, key) => {
+const verifySignature = async (
+  address,
+  payload,
+  signature,
+  key,
+  access_token,
+) => {
   try {
-    const verifySigRes = await requestVerifySignature(CLIENT_PATH.VERIFY_SIGNATURE, { address, payload, signature, key });
-    if (verifySigRes.data.code !== 0 || !verifySigRes.data.data) throw verifySigRes.data;
+    const verifySigRes = await requestVerifySignature(
+      CLIENT_PATH.VERIFY_SIGNATURE,
+      {address, payload, signature, key},
+      access_token,
+    );
+    console.log(verifySigRes.data);
+    if (verifySigRes.data.code !== 0 || !verifySigRes.data.data) {
+      throw verifySigRes.data;
+    }
   } catch (e) {
+    console.log('verifySignature', e);
     throw VERIFIER_ERROR_CODE.INVALID_SIGNATURE;
   }
 };
@@ -82,7 +106,7 @@ const verifySignature = async (address, payload, signature, key) => {
  * @return {Promise}
  */
 
-export const verifyCardanoDocument = async (document, address) => {
+export const verifyCardanoDocument = async (document, access_token) => {
   try {
     // * First verifier is verifying the hash of wrappedDocument (targetHash)
     const res = await verifyTargetHash(document);
@@ -101,23 +125,36 @@ export const verifyCardanoDocument = async (document, address) => {
           address: unsalt(document?.data.issuers[0]?.address),
           targetHash: targetHash,
         }),
-        'utf8'
+        'utf8',
       ).toString('hex');
       // * Call to cardanoService to verify the targetHash
       await verifyCNFT(targetHash, policyId);
-      await verifySignature(unsalt(document?.data.issuers[0]?.address), payload, signature, key);
+      console.log('1');
+      await verifySignature(
+        unsalt(document?.data.issuers[0]?.address),
+        payload,
+        signature,
+        key,
+        access_token,
+      );
+      console.log('2');
       const EXCLUDE_VALUE = '';
-      const getRes = await getDidDocumentByDid(CLIENT_PATH.GET_DID_DOCUMENT_BY_DID, {
-        did: didOfWrappedDocument,
-        exclude: EXCLUDE_VALUE,
-      });
+      const getRes = await getDidDocumentByDid(
+        CLIENT_PATH.GET_DID_DOCUMENT_BY_DID,
+        {
+          did: didOfWrappedDocument,
+          exclude: EXCLUDE_VALUE,
+        },
+      );
       if (getRes.data) {
         return {
           policyId: policyId,
           didDoc: getRes.data.didDoc,
         };
       }
-      if (getRes.data.errorCode) throw getRes.data;
+      if (getRes.data.errorCode) {
+        throw getRes.data;
+      }
     }
     throw res;
   } catch (e) {
@@ -129,17 +166,26 @@ export const verifyCardanoDocument = async (document, address) => {
  * @param {Object} document - wrappedDocument
  * @return {Boolean}
  */
-const verifyTargetHash = (document) => {
+const verifyTargetHash = document => {
+  console.log('verifyTargetHash', typeof document);
   // Get signature field from wrappedDocument which user wanna verify
   const signature = get(document, 'signature');
-  if (!signature) return VERIFIER_ERROR_CODE.MISSING_SIGNATURE;
+  if (!signature) {
+    return VERIFIER_ERROR_CODE.MISSING_SIGNATURE;
+  }
   // Checks target hash
   const digest = digestDocument(document);
   const targetHash = get(document, 'signature.targetHash');
 
   // If the system hashes the contents of the current wrapperDocument, check if it matches the targetHash available in the wrapperDocument.
-  if (digest !== targetHash) return VERIFIER_ERROR_CODE.INVALID_TARGET_HASH;
+  if (digest !== targetHash) {
+    return VERIFIER_ERROR_CODE.INVALID_TARGET_HASH;
+  }
 
   // Function that runs through the supplied hashes to arrive at the supplied merkle root hash
-  return checkProof([], document?.signature?.merkleRoot, document?.signature?.targetHash);
+  return checkProof(
+    [],
+    document?.signature?.merkleRoot,
+    document?.signature?.targetHash,
+  );
 };

@@ -51,7 +51,11 @@ export const getWrappedDocumentsContent = async (
       );
       wrappedDocumentsContent.push(wrappedDocument?.data?.wrappedDoc);
     } catch (e) {
-      throw GENERAL_ERROR.CANNOT_GET_INFORMATION_OF_WRAPPED_DOCUMENT;
+      console.log(
+        'GENERAL_ERROR.CANNOT_GET_INFORMATION_OF_WRAPPED_DOCUMENT',
+        e,
+      );
+      throw 'GENERAL_ERROR.CANNOT_GET_INFORMATION_OF_WRAPPED_DOCUMENT';
     }
   }
   return wrappedDocumentsContent;

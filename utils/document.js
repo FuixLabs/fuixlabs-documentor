@@ -432,8 +432,12 @@ export const makeNullDidDocument = originDidDoc => {
   return newDidDoc;
 };
 
-export const getDidDocument = async (fileName, access_token) => {
-  const wrappedDocumentDid = `did:fuixlabs:COMPANY_NAME:${fileName}`;
+export const getDidDocument = async (
+  fileName,
+  access_token,
+  COMPANY_NAME = 'COMPANY_NAME',
+) => {
+  const wrappedDocumentDid = `did:fuixlabs:${COMPANY_NAME}:${fileName}`;
   try {
     const getValue = 'did';
     const response = await getDidDocumentByDid(
