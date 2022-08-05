@@ -15,6 +15,10 @@ export const VALID_DOCUMENT_NAME_TYPE = [
     name: 'Certificate of Analysis (COA)',
     type: 'trade',
   },
+  {
+    name: 'Soil Science Society of America',
+    type: 'trade',
+  },
 ];
 
 export const SAMPLE_SERVICE = 'cardano';

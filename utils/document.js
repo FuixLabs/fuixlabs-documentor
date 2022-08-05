@@ -60,7 +60,6 @@ export const createWrappedDocument = async (
   }
   try {
     // Send GET request to controller to check whether the DID_Document exist
-    console.log('createWrappedDocument');
     const response = await checkExistsDidoWrappedDoc(
       CLIENT_PATH.CHECK_DID_OF_WRAPPED_DOCUMENT,
       {
@@ -69,7 +68,6 @@ export const createWrappedDocument = async (
       },
       access_token,
     );
-    console.log('createWrappedDocument 2', response.data);
     const isExisted = response.data;
     //Get the existed condition of DID_Document
     // const isExisted = response?.data?.isExisted;

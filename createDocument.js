@@ -120,21 +120,29 @@ export const createDocument = async (
       );
       console.log(6);
       if (wrappedResult?.data?.code === 1) {
-        throw wrapDocument;
+        throw new Error(wrappedResult?.data?.message);
       }
       const doc = wrappedResult.data;
       return {
         wrappedDocument: doc,
       };
     } catch (e) {
-      console.log('e', e);
+      console.log('createDocument', e);
       throw (
         e.msg ||
         e.errorMessage ||
         e.errorMsg ||
         e.message ||
-        'Something went wrong! Please try again later.'
+        'Server is busy! Please try again later.'
       );
     }
   }
 };
+
+function scaryClown() {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve('🤡');
+    }, 6000);
+  });
+}
