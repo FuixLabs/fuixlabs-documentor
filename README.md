@@ -78,5 +78,21 @@ catch(e) {
   console.log(e);
 }
 
+```
+### Revoke existed wrapped document
+The `revokeDocument` function takes as a parameter a config object that is stored in the wrapped document when the document is created. The function will send a request to the cardano server to burn the nft containing the content of that document.
+If the process fails, the function returns an error object, with msg being the content of the error
+
+```js
+import { revokeDocument as _revokeDocument } from 'fuixlabs-documentor/revokeDocument';
+
+const mintingNFTConfig = {};
+try {
+  await _revokeDocument(revokeDocument.mintingNFTConfig);
+} catch(e) {
+  console.log(e)
+}
+```
+
 
 
