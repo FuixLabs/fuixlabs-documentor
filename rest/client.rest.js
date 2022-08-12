@@ -2,7 +2,7 @@ import axiosClient from './client.base';
 import axios from 'axios';
 import {CLIENT_PATH} from './client.path';
 // 'http://192.168.2.37:8000/';
-const BASE_URL = 'https://ee9c-18-139-84-180.ap.ngrok.io/';
+const BASE_URL = 'https://resolver-fuixlabs.ap.ngrok.io/';
 // 'http://18.139.84.180:8000/';
 
 export const sendWrappedDocument = async (path, data, access_token = null) => {
@@ -73,7 +73,6 @@ export const checkExistsDidoWrappedDoc = async (
   if (access_token) {
     data = {...data, Cookie: `access_token=${access_token}`};
   }
-  console.log(data);
   return await axiosClient.get(`${BASE_URL}${path}`, {headers: data});
 };
 
@@ -141,7 +140,6 @@ export const requestPullTransactions = async (
   if (access_token) {
     data = {...data, Cookie: `access_token=${access_token}`};
   }
-  console.log('BASE_URL', BASE_URL);
   return await axiosClient.get(`${BASE_URL}${path}`, {
     headers: data,
   });
@@ -207,10 +205,11 @@ export const requestRevokeDocument = async (
   data,
   access_token = null,
 ) => {
+  let headers = {};
   if (access_token) {
-    data = {...data, Cookie: `access_token=${access_token}`};
+    headers = {Cookie: `access_token=${access_token}`};
   }
-  return await axiosClient.delete(`${BASE_URL}${path}`, data);
+  return await axiosClient.delete(`${BASE_URL}${path}`, {...data, headers});
 };
 
 /**

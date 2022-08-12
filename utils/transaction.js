@@ -28,7 +28,7 @@ export const pullTransactions = async (did, access_token) => {
     }
     return formatTransactions;
   } catch (e) {
-    console.log('pullTransactions ', JSON.stringify(e));
+    console.log('pullTransactions ', e);
     throw ERROR_MSG.CANNOT_PULL_TRANSACTIONS;
   }
 };
@@ -48,7 +48,7 @@ const filterTransaction = async (data, access_token) => {
       },
       access_token,
     );
-    if (verifyRes?.data?.data.asset) {
+    if (verifyRes?.data?.asset) {
       status = 'Issued';
     }
     return {

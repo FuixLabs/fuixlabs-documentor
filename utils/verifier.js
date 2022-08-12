@@ -43,10 +43,11 @@ const verifySignature = async (address, payload, signature) => {
       CLIENT_PATH.VERIFY_SIGNATURE,
       {address, payload, signature},
     );
-    if (verifySigRes.data.error_code || !verifySigRes.data.data.result) {
-      throw verifySigRes.data;
+    if (verifySigRes.data.error_code || !verifySigRes.data.result) {
+      throw verifySigRes?.data?.error?.message;
     }
   } catch (e) {
+    console.log('first,', e);
     throw VERIFIER_ERROR_CODE.INVALID_SIGNATURE;
   }
 };
@@ -108,7 +109,6 @@ export const verifyCardanoDocument = async (document, address) => {
  * @return {Boolean}
  */
 const verifyTargetHash = document => {
-  console.log('verifyTargetHash 2');
   // Get signature field from wrappedDocument which user wanna verify
   const signature = get(document, 'signature');
   if (!signature) {
@@ -117,7 +117,6 @@ const verifyTargetHash = document => {
   // Checks target hash
   const digest = digestDocument(document);
   const targetHash = get(document, 'signature.targetHash');
-
   // If the system hashes the contents of the current wrapperDocument, check if it matches the targetHash available in the wrapperDocument.
   if (digest !== targetHash) {
     return VERIFIER_ERROR_CODE.INVALID_TARGET_HASH;

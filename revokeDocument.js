@@ -1,5 +1,5 @@
 // * Constant libraries
-import {GENERAL_ERROR} from './constants/error';
+// import {GENERAL_ERROR} from './constants/error';
 
 // * Rest libraries
 import {CLIENT_PATH} from './rest/client.path';
@@ -24,8 +24,12 @@ export const revokeDocument = async (config, access_token) => {
       },
       access_token,
     );
+    console.log('revokeResult', revokeResult?.data);
     if (revokeResult?.data?.code === 1) {
       throw revokeResult?.data;
+    }
+    if (revokeResult.data.error_code) {
+      throw new Error(revokeResult.data.error_message);
     }
     return {
       result: true,

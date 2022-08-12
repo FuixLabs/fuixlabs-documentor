@@ -38,7 +38,6 @@ export const createDocument = async (
   fuixlabsWalletors = undefined,
   access_token,
 ) => {
-  console.log(1, documents);
   for (let index = 0; index < documents.length; index++) {
     let document = documents[index];
 
@@ -65,7 +64,7 @@ export const createDocument = async (
         prop => prop.name === createdDocument.name,
       )?.type,
     });
-    console.log(2);
+    // console.log(2);
     const did = generateDid('COMPANY_NAME', usedAddress); // * Did of issuers
     // * Create new document, generate did of wrapped-document rely on file name and company name, and create target-hash based on data of the document
     try {
@@ -76,7 +75,7 @@ export const createDocument = async (
         did,
         access_token,
       );
-      console.log(3);
+      // console.log(3);
       const {_document, targetHash, ddidDocument} = res;
       // * Sign Object with signing function of cardano
       const signedData = await signObject(
@@ -88,7 +87,7 @@ export const createDocument = async (
         },
         fuixlabsWalletors,
       );
-      console.log(4);
+      // console.log(4);
       const response = wrapDocument({
         document: _document,
         walletAddress: usedAddress,
@@ -112,13 +111,13 @@ export const createDocument = async (
           mintingNFTConfig: updateDocument?.mintingNFTConfig,
         };
       }
-      console.log(5);
+      // console.log(5);
       const wrappedResult = await sendWrappedDocument(
         CLIENT_PATH.SEND_WRAPPED_DOCUMENT,
         requestBody,
         access_token,
       );
-      console.log(6);
+      // console.log(6);
       if (wrappedResult?.data?.code === 1) {
         throw new Error(wrappedResult?.data?.message);
       }
