@@ -72,7 +72,7 @@ const verifyCNFT = async (targetHash, policyId, access_token) => {
       throw response.data;
     }
   } catch (e) {
-    if (e?.response?.status) {
+    if ([500, 400].includes(e?.response?.status)) {
       throw new Error('Server is bussy, please try again. ' + e.message);
     }
     throw VERIFIER_ERROR_CODE.CNFTs;
