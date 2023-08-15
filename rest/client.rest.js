@@ -1,16 +1,14 @@
-import axiosClient from './client.base';
-import axios from 'axios';
-import {CLIENT_PATH} from './client.path';
-// 'http://192.168.2.37:8000/';
-const BASE_URL = 'https://resolver-fuixlabs.ap.ngrok.io/';
-// 'http://18.139.84.180:8000/';
+import axiosClient from "./client.base";
+import axios from "axios";
+import { CLIENT_PATH } from "./client.path";
+const BASE_URL = "https://resolver-fuixlabs.ap.ngrok.io/";
 
 export const sendWrappedDocument = async (path, data, access_token = null) => {
   let headers = {};
   if (access_token) {
-    headers = {Cookie: `access_token=${access_token}`};
+    headers = { Cookie: `access_token=${access_token}` };
   }
-  return await axios.post(`${BASE_URL}${path}`, data, {headers});
+  return await axios.post(`${BASE_URL}${path}`, data, { headers });
 };
 
 /**
@@ -20,13 +18,13 @@ export const sendWrappedDocument = async (path, data, access_token = null) => {
  * @return {Promise}
  */
 export const requestVerifyCNFT = async (path, data, access_token = null) => {
-  const {hashOfDocument, policyId} = data;
+  const { hashOfDocument, policyId } = data;
   let headers = {
     hashOfDocument,
     policyId,
   };
   if (access_token) {
-    headers = {...headers, Cookie: `access_token=${access_token}`};
+    headers = { ...headers, Cookie: `access_token=${access_token}` };
   }
   return await axiosClient.get(`${BASE_URL}${path}`, {
     headers: headers,
@@ -42,9 +40,9 @@ export const requestVerifyCNFT = async (path, data, access_token = null) => {
 export const requestVerifySignature = async (
   path,
   data,
-  access_token = null,
+  access_token = null
 ) => {
-  const {address, payload, signature, key} = data;
+  const { address, payload, signature, key } = data;
   let headers = {
     address,
     payload,
@@ -52,7 +50,7 @@ export const requestVerifySignature = async (
     key,
   };
   if (access_token) {
-    headers = {...headers, Cookie: `access_token=${access_token}`};
+    headers = { ...headers, Cookie: `access_token=${access_token}` };
   }
   return await axiosClient.get(`${BASE_URL}${path}`, {
     headers: headers,
@@ -68,12 +66,12 @@ export const requestVerifySignature = async (
 export const checkExistsDidoWrappedDoc = async (
   path,
   data,
-  access_token = null,
+  access_token = null
 ) => {
   if (access_token) {
-    data = {...data, Cookie: `access_token=${access_token}`};
+    data = { ...data, Cookie: `access_token=${access_token}` };
   }
-  return await axiosClient.get(`${BASE_URL}${path}`, {headers: data});
+  return await axiosClient.get(`${BASE_URL}${path}`, { headers: data });
 };
 
 /**
@@ -84,14 +82,14 @@ export const checkExistsDidoWrappedDoc = async (
  */
 
 export const getDidDocumentByDid = async (path, data, access_token = null) => {
-  const {did, exclude} = data;
+  const { did, exclude } = data;
   // * only parameter to represent when you need to get a specific object from the DIDController side
   const queryParams = `?only=${exclude}`;
   let headers = {
     did,
   };
   if (access_token) {
-    headers = {...headers, Cookie: `access_token=${access_token}`};
+    headers = { ...headers, Cookie: `access_token=${access_token}` };
   }
   return await axiosClient.get(`${BASE_URL}${path}${queryParams}`, {
     headers: {
@@ -110,14 +108,14 @@ export const getDidDocumentByDid = async (path, data, access_token = null) => {
 export const _pullNFTs = async (
   path = CLIENT_PATH.PULL_NFTS,
   data,
-  access_token = null,
+  access_token = null
 ) => {
-  const {policyId} = data;
+  const { policyId } = data;
   let headers = {
     policyId,
   };
   if (access_token) {
-    headers = {...headers, Cookie: `access_token=${access_token}`};
+    headers = { ...headers, Cookie: `access_token=${access_token}` };
   }
   return await axiosClient.get(`${BASE_URL}${path}`, {
     headers: {
@@ -135,10 +133,10 @@ export const _pullNFTs = async (
 export const requestPullTransactions = async (
   path,
   data,
-  access_token = null,
+  access_token = null
 ) => {
   if (access_token) {
-    data = {...data, Cookie: `access_token=${access_token}`};
+    data = { ...data, Cookie: `access_token=${access_token}` };
   }
   return await axiosClient.get(`${BASE_URL}${path}`, {
     headers: data,
@@ -153,13 +151,13 @@ export const requestPullTransactions = async (
 export const requestCreateCredential = async (
   path,
   data,
-  access_token = null,
+  access_token = null
 ) => {
   let headers = {};
   if (access_token) {
-    headers = {Cookie: `access_token=${access_token}`};
+    headers = { Cookie: `access_token=${access_token}` };
   }
-  return await axiosClient.post(`${BASE_URL}${path}`, data, {headers});
+  return await axiosClient.post(`${BASE_URL}${path}`, data, { headers });
 };
 
 /**
@@ -168,14 +166,14 @@ export const requestCreateCredential = async (
  * @return {Promise}
  */
 export const requestPublicKey = async (path, data, access_token = null) => {
-  const {address, user} = data;
+  const { address, user } = data;
   return await axiosClient.get(
     `${BASE_URL}${path}?address=${address}&&user=${user}`,
     {
       headers: {
         Cookie: `access_token=${access_token}`,
       },
-    },
+    }
   );
 };
 
@@ -187,10 +185,10 @@ export const requestPublicKey = async (path, data, access_token = null) => {
 export const requestUpdateDidDocument = async (
   path,
   data,
-  access_token = null,
+  access_token = null
 ) => {
   if (access_token) {
-    data = {...data, Cookie: `access_token=${access_token}`};
+    data = { ...data, Cookie: `access_token=${access_token}` };
   }
   return await axiosClient.put(`${BASE_URL}${path}`, data);
 };
@@ -203,13 +201,13 @@ export const requestUpdateDidDocument = async (
 export const requestRevokeDocument = async (
   path,
   data,
-  access_token = null,
+  access_token = null
 ) => {
   let headers = {};
   if (access_token) {
-    headers = {Cookie: `access_token=${access_token}`};
+    headers = { Cookie: `access_token=${access_token}` };
   }
-  return await axiosClient.delete(`${BASE_URL}${path}`, {...data, headers});
+  return await axiosClient.delete(`${BASE_URL}${path}`, { ...data, headers });
 };
 
 /**
@@ -219,16 +217,16 @@ export const requestRevokeDocument = async (
 export const searchDocument = async (
   searchString,
   pageNumber = 1,
-  access_token = null,
+  access_token = null
 ) => {
   let headers = {};
   if (access_token) {
-    headers = {Cookie: `access_token=${access_token}`};
+    headers = { Cookie: `access_token=${access_token}` };
   }
   return await axiosClient.get(
     `${BASE_URL}${CLIENT_PATH.SEARCH_DOCUMENTS}pageNumber=${pageNumber}&searchString=${searchString}`,
     {
       headers: headers,
-    },
+    }
   );
 };

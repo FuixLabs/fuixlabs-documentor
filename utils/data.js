@@ -1,24 +1,37 @@
-const {UUIDV4_LENGTH} = require('../constants/hash');
-const {v4} = require('uuid');
-const isUUID = require('validator/lib/isUUID');
-const {deepMap} = require('./salt.ts');
-const {SIGNATURE_TYPE} = require('../constants/type');
+const { UUIDV4_LENGTH } = require("../constants/hash");
+const { v4 } = require("uuid");
+const isUUID = require("validator/lib/isUUID");
+const { deepMap } = require("./salt.ts");
+const { SIGNATURE_TYPE } = require("../constants/type");
 
-export const saltData = data => {
+/**
+ * Function used for create new wrapped document with document object, current user's public key
+ * @param {Object} data - data object
+ * @returns {Object} - salted data object
+ */
+export const saltData = (data) => {
   return deepMap(data, uuidSalt);
 };
 
 /**
+ * Function used for create new document with data object
  * @param {Object} data
  * @return {Object} document
  */
-export const _createDocument = data => {
+export const _createDocument = (data) => {
   const documentSchema = {
     data: saltData(data),
   };
   return documentSchema;
 };
 
+/**
+ * Function used for create new wrapped document with document object, current user's public key
+ * @param {Object} document - document object
+ * @param {String} signedData - signed data
+ * @param {String} targetHash - target hash
+ * @returns {Object} - wrapped document
+ */
 export const _wrapDocument = (document, signedData, targetHash) => {
   const signatureProof = [
     {
@@ -42,43 +55,42 @@ export const _wrapDocument = (document, signedData, targetHash) => {
 };
 
 /**
- *
+ * Function used to create uuid salted string
+ * @param {String} value - value to be salted
+ * @returns {String} - salted string in the format "salt:type:value", example: "ee7f3323-1634-4dea-8c12-f0bb83aff874:number:5"
  */
-export const uuidSalt = value => {
+export const uuidSalt = (value) => {
   const salt = v4();
   return `${salt}:${primitiveToTypedString(value)}`;
 };
 
 /**
- *
+ * Function used to get type of value
+ * @param {String} value - value need to be get type
+ * @returns
  */
-const primitiveToTypedString = value => {
+const primitiveToTypedString = (value) => {
   switch (typeof value) {
-    case 'number':
-    case 'string':
-    case 'boolean':
-    case 'undefined':
+    case "number":
+    case "string":
+    case "boolean":
+    case "undefined":
       return `${typeof value}:${String(value)}`;
     default:
       if (value === null) {
         // typeof null is 'object' so we have to check for it
-        return 'null:null';
+        return "null:null";
       }
       throw new Error(
-        `Parsing error, value is not of primitive type: ${value}`,
+        `Parsing error, value is not of primitive type: ${value}`
       );
   }
 };
 
-/**
- *
- */
 export const generateDidOfWrappedDocument = (companyName, name) => {
   const ddidDocument = `did:fuixlabs:${companyName}:${name}`;
   return ddidDocument;
 };
-
-// ADDITIONAL FUNCTIONS USED FOR VAFIFYING DOCUMENT
 
 /**
  * @param {String} value
@@ -102,9 +114,9 @@ export function deepUnsalt(data) {
  * @param {String} input
  * @return {Boolean} - Dose the input start with UUIDV4
  */
-export const startsWithUuidV4 = input => {
-  if (input && typeof input === 'string') {
-    const elements = input.split(':');
+export const startsWithUuidV4 = (input) => {
+  if (input && typeof input === "string") {
+    const elements = input.split(":");
     return isUUID(elements[0], 4);
   }
   return false;
@@ -114,24 +126,24 @@ export const startsWithUuidV4 = input => {
  * @param {String} input
  * Returns an appropriately typed value given a string with type annotations, e.g: "number:5"
  */
-export const typedStringToPrimitive = input => {
-  const [type, ...valueArray] = input.split(':');
-  const value = valueArray.join(':'); // just in case there are colons in the value
+export const typedStringToPrimitive = (input) => {
+  const [type, ...valueArray] = input.split(":");
+  const value = valueArray.join(":"); // just in case there are colons in the value
 
   switch (type) {
-    case 'number':
+    case "number":
       return Number(value);
-    case 'string':
+    case "string":
       return String(value);
-    case 'boolean':
-      return value === 'true';
-    case 'null':
+    case "boolean":
+      return value === "true";
+    case "null":
       return null;
-    case 'undefined':
+    case "undefined":
       return undefined;
     default:
       throw new Error(
-        `Parsing error, type annotation not found in string: ${input}`,
+        `Parsing error, type annotation not found in string: ${input}`
       );
   }
 };

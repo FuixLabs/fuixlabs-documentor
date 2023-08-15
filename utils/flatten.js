@@ -17,10 +17,10 @@ const filters = [{ test: hasPeriodInKey }];
  */
 export const _flatten = (data, options) => {
   const newOptions = options ? cloneDeep(options) : {};
-  if (newOptions.coercion) {
-    newOptions.coercion.push(...filters);
+  if (newOptions?.coercion) {
+    newOptions?.coercion.push(...filters);
   } else {
-    newOptions.coercion = filters;
+    newOptions?.coercion = filters;
   }
   return flatten(data, newOptions);
 };

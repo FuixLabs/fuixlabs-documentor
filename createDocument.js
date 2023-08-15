@@ -1,16 +1,16 @@
 // * Utilities libraries
-import {deepMap} from './utils/salt.ts';
-import {unsalt} from './utils/data';
+import { deepMap } from "./utils/salt.ts";
+import { unsalt } from "./utils/data";
 import {
   signObject,
   wrapDocument,
   createWrappedDocument,
-} from './utils/document';
-import {generateDid} from './utils/did';
+} from "./utils/document";
+import { generateDid } from "./utils/did";
 
 // * Rest client libraries
-import {sendWrappedDocument} from './rest/client.rest';
-import {CLIENT_PATH} from './rest/client.path';
+import { sendWrappedDocument } from "./rest/client.rest";
+import { CLIENT_PATH } from "./rest/client.path";
 
 // * Constants libraries
 import {
@@ -18,7 +18,7 @@ import {
   SAMPLE_SERVICE,
   _DOCUMENT_TYPE,
   COMPANY_NAME,
-} from './constants/type';
+} from "./constants/type";
 
 /**
  * Function used for create new wrapped document with document object, current user's public key
@@ -36,7 +36,7 @@ export const createDocument = async (
   update,
   updateDocument,
   fuixlabsWalletors = undefined,
-  access_token,
+  access_token
 ) => {
   for (let index = 0; index < documents.length; index++) {
     let document = documents[index];
@@ -45,27 +45,20 @@ export const createDocument = async (
     document = deepMap(document, unsalt);
     let createdDocument = {};
     for (const key in document) {
-      if (key !== 'did') {
+      if (key !== "did") {
         createdDocument = Object.assign(createdDocument, {
           [key]: document[key],
         });
       }
     }
-    // console.log(
-    //   `VALID_DOCUMENT_NAME_TYPE.find(
-    //   prop => prop.name === createdDocument.name,
-    // )?.type,`,
-    //   createdDocument,
-    // );
     createdDocument = Object.assign(createdDocument, {
       companyName: COMPANY_NAME,
       // * Get type rely on name of document in config file
       intention: VALID_DOCUMENT_NAME_TYPE.find(
-        prop => prop.name === createdDocument.name,
+        (prop) => prop.name === createdDocument?.name
       )?.type,
     });
-    // console.log(2);
-    const did = generateDid('COMPANY_NAME', usedAddress); // * Did of issuers
+    const did = generateDid(COMPANY_NAME, usedAddress); // * Did of issuers
     // * Create new document, generate did of wrapped-document rely on file name and company name, and create target-hash based on data of the document
     try {
       let res = await createWrappedDocument(
@@ -73,10 +66,9 @@ export const createDocument = async (
         SAMPLE_SERVICE,
         usedAddress,
         did,
-        access_token,
+        access_token
       );
-      // console.log(3);
-      const {_document, targetHash, ddidDocument} = res;
+      const { _document, targetHash, ddidDocument } = res;
       // * Sign Object with signing function of cardano
       const signedData = await signObject(
         currentWallet,
@@ -85,9 +77,8 @@ export const createDocument = async (
           address: usedAddress,
           targetHash: targetHash,
         },
-        fuixlabsWalletors,
+        fuixlabsWalletors
       );
-      // console.log(4);
       const response = wrapDocument({
         document: _document,
         walletAddress: usedAddress,
@@ -104,44 +95,33 @@ export const createDocument = async (
       // * If the type of document is non-trade, then make a new document with new policy id, otherwise, make a copy of current document with the same policy id
       if (
         update &&
-        unsalt(wrappedDocument?.data.intention) === _DOCUMENT_TYPE.nonTrade
+        unsalt(wrappedDocument?.data.intention) === _DOCUMENT_TYPE?.nonTrade
       ) {
         requestBody = {
           ...requestBody,
           mintingNFTConfig: updateDocument?.mintingNFTConfig,
         };
       }
-      // console.log(5);
       const wrappedResult = await sendWrappedDocument(
         CLIENT_PATH.SEND_WRAPPED_DOCUMENT,
         requestBody,
-        access_token,
+        access_token
       );
-      // console.log(6);
       if (wrappedResult?.data?.code === 1) {
         throw new Error(wrappedResult?.data?.message);
       }
-      const doc = wrappedResult.data;
+      const doc = wrappedResult?.data;
       return {
         wrappedDocument: doc,
       };
     } catch (e) {
-      console.log('createDocument', e);
       throw (
-        e.msg ||
-        e.errorMessage ||
-        e.errorMsg ||
-        e.message ||
-        'Server is busy! Please try again later.'
+        e?.msg ||
+        e?.errorMessage ||
+        e?.errorMsg ||
+        e?.message ||
+        "Server is busy! Please try again later."
       );
     }
   }
 };
-
-function scaryClown() {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve('🤡');
-    }, 6000);
-  });
-}
